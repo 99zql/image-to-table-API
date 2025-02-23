@@ -22,13 +22,14 @@ def image_to_table(image_url: str):
             for y in range(height):
                 for x in range(width):
                     r, g, b, a = frame.getpixel((x, y))
-                    roblox_alpha = round(1 - (a / 255), 2)  # Inverter transparência
+                    roblox_alpha = round(1 - (a / 255), 2)
+                    roblox_alpha = int(roblox_alpha) if roblox_alpha == 0 else roblox_alpha
+                    
+                    if roblox_alpha < 1:
+                        pixels.append(f"{x} {y} {r} {g} {b} {roblox_alpha}")
 
-                    if roblox_alpha < 1:  # Apenas pixels visíveis no Roblox
-                        pixels.append([x, y, r, g, b, roblox_alpha])
-
-            if pixels:  # Apenas adiciona frames que possuem pixels visíveis
-                frames[f"Frame {i+1}"] = pixels  
+            if pixels:
+                frames[f"Frame {i+1}"] = " ".join(pixels)  
 
         return frames if frames else {"message": "A imagem não possui pixels visíveis."}
     
