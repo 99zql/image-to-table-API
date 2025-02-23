@@ -26,10 +26,10 @@ def image_to_table(image_url: str):
                     roblox_alpha = int(roblox_alpha) if roblox_alpha == 0 else roblox_alpha
                     
                     if roblox_alpha < 1:
-                        pixels.append(f"{x} {y} {r} {g} {b} {roblox_alpha}")
+                        pixels.append(f"{x},{y},{r},{g},{b},{roblox_alpha}")
 
             if pixels:
-                frames[f"Frame {i+1}"] = " ".join(pixels)  
+                frames[f"Frame {i+1}"] = ",".join(pixels)  
 
         return frames if frames else {"message": "A imagem não possui pixels visíveis."}
     
