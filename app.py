@@ -35,7 +35,11 @@ def image_to_table(image_url: str, resolution: float = Query(1.0, gt=0, le=1.0))
                         pixels.append(f"{x},{y},{r},{g},{b},{roblox_alpha}")
 
             if pixels:  # Apenas adiciona frames que possuem pixels visíveis
-                frames[f"Frame {i+1}"] = ",".join(pixels)  
+                frames[f"Frame {i+1}"] = {
+                    "width": new_width,
+                    "height": new_height,
+                    "pixels": ",".join(pixels)
+                }
 
         return frames if frames else {"message": "A imagem não possui pixels visíveis."}
     
