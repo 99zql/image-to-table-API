@@ -2,15 +2,8 @@ from fastapi import FastAPI, HTTPException
 import requests
 from io import BytesIO
 from PIL import Image, ImageSequence
-import base64
-import json
 
 app = FastAPI()
-
-def encode_image(image):
-    buffered = BytesIO()
-    image.save(buffered, format="PNG")
-    return base64.b64encode(buffered.getvalue()).decode()
 
 @app.get("/imagetotable/imageurl")
 def image_to_table(image_url: str):
@@ -19,30 +12,26 @@ def image_to_table(image_url: str):
         response.raise_for_status()
         
         image = Image.open(BytesIO(response.content))
-        frames = []
-        
+        frames = {}
+
         for i, frame in enumerate(ImageSequence.Iterator(image)):
-            frame = frame.convert("RGBA")  # Garante canal alfa
+            frame = frame.convert("RGBA")
             width, height = frame.size
-            pixels = {}
+            pixels = []
 
             for y in range(height):
                 for x in range(width):
                     r, g, b, a = frame.getpixel((x, y))
-                    if a > 0:  # Apenas pixels visíveis
-                        pixels[f"{x},{y}"] = (r, g, b, a)
-            
-            compressed_pixels = base64.b64encode(json.dumps(pixels).encode()).decode()
-            frames.append({
-                f"Frame {i+1}": {
-                    "source": encode_image(frame),
-                    "width": width,
-                    "height": height,
-                    "pixels": compressed_pixels
-                }
-            })
-        
-        return {"frames": frames} if len(frames) > 1 else frames[0]
+                    roblox_alpha = round(1 - (a / 255), 2)  # Inverter transparência
+
+                    if roblox_alpha < 1:  # Apenas pixels visíveis no Roblox
+                        pixels.append([x, y, r, g, b, roblox_alpha])
+
+            if pixels:  # Apenas adiciona frames que possuem pixels visíveis
+                frames[f"Frame {i+1}"] = pixels  
+
+        return frames if frames else {"message": "A imagem não possui pixels visíveis."}
+    
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=400, detail=f"Erro ao baixar a imagem: {e}")
     except Exception as e:
