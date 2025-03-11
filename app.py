@@ -33,7 +33,7 @@ def image_to_table(imageurl: str, resolution: float = Query(1.0, gt=0, le=10.0))
                         pixels.append(f"{x},{y},{r},{g},{b},{alpha}")
 
             if pixels:
-                frames[f"Frame {i+1}"] = pixels
+                frames[f"Frame {i+1}"] = ",".join(pixels)
 
         if not frames:
             return {"message": "A imagem não possui pixels visíveis."}
