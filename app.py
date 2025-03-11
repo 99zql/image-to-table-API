@@ -33,7 +33,7 @@ def image_to_table(imageurl: str, resolution: float = Query(1.0, gt=0, le=10.0))
                         pixels.append(f"{x},{y},{r},{g},{b},{alpha}")
 
             if pixels:
-                frames[f"Frame {i+1}"] = ";".join(pixels)
+                frames[f"Frame {i+1}"] = ",".join(pixels)
 
         if not frames:
             return {"message": "A imagem não possui pixels visíveis."}
@@ -43,4 +43,4 @@ def image_to_table(imageurl: str, resolution: float = Query(1.0, gt=0, le=10.0))
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=400, detail=f"Erro ao baixar a imagem: {e}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao processar a imagem: {e}"}
+        raise HTTPException(status_code=500, detail=f"Erro ao processar a imagem: {e}")
