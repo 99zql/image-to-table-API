@@ -26,11 +26,13 @@ def image_to_table(imageurl: str, resolution: float = Query(1.0, gt=0, le=10.0))
             for y in range(new_height):
                 for x in range(new_width):
                     r, g, b, a = frame.getpixel((x, y))
-                    alpha = round(1 - (a / 255), 2)
-                    alpha = int(alpha) if alpha == 0 else alpha
+                    
+                    if a == 0:
+                        continue
 
-                    if alpha < 1:
-                        pixels.append(f"{x},{y},{r},{g},{b},{alpha}")
+                    transparency = round(1 - (a / 255), 2)
+
+                    pixels.append(f"{x},{y},{r},{g},{b},{transparency}")
 
             if pixels:
                 frames[f"Frame {i+1}"] = ",".join(pixels)
